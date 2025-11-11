@@ -36,6 +36,24 @@
     .btn-primary:hover { background:#0360b2; }
     .btn-outline-primary { border-color:#004b8d;color:#004b8d;font-weight:500; }
     .btn-outline-primary:hover { background:#004b8d;color:white; }
+
+    /* === Botões de classificação restaurados === */
+    #botoesClassificacao {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    #botoesClassificacao .btn {
+      flex: 1;
+      font-weight: bold;
+      border-width: 2px;
+      font-size: 1.1rem;
+      padding: 10px 0;
+      transition: all 0.3s ease;
+      background: white;
+    }
     #botoesClassificacao .btn.active {
       background-color: #f1f1f1 !important;
       box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
@@ -51,11 +69,11 @@
       <!-- DADOS BÁSICOS -->
       <div class="section-title"><span class="material-icons">person_search</span> Dados do Paciente</div>
       <div class="row">
-        <div class="col-md-6 mb-3"><label>Nome</label><input type="text" name="nome" class="form-control" required></div>
-        <div class="col-md-3 mb-3"><label>Idade</label><input type="number" name="idade" class="form-control"></div>
+        <div class="col-md-6 mb-3"><label>Nome</label><input type="text" id="nome" class="form-control" required></div>
+        <div class="col-md-3 mb-3"><label>Idade</label><input type="number" id="idade" class="form-control"></div>
         <div class="col-md-3 mb-3">
           <label>Sexo</label>
-          <select name="sexo" class="form-select">
+          <select id="sexo" class="form-select">
             <option value="">Selecione</option>
             <option>Masculino</option>
             <option>Feminino</option>
@@ -66,24 +84,24 @@
       <!-- SINAIS VITAIS -->
       <div class="section-title"><span class="material-icons">healing</span> Sinais Vitais</div>
       <div class="row">
-        <div class="col-md-4 mb-3"><label>PAS</label><input type="number" name="pas" class="form-control"></div>
-        <div class="col-md-4 mb-3"><label>PAD</label><input type="number" name="pad" class="form-control"></div>
-        <div class="col-md-4 mb-3"><label>FC (bpm)</label><input type="number" name="fc" class="form-control"></div>
-        <div class="col-md-4 mb-3"><label>FR (irpm)</label><input type="number" name="fr" class="form-control"></div>
-        <div class="col-md-4 mb-3"><label>Temperatura (°C)</label><input type="number" step="0.1" name="temp" class="form-control"></div>
-        <div class="col-md-4 mb-3"><label>Saturação (SpO₂)</label><input type="number" name="spo2" class="form-control"></div>
-        <div class="col-md-4 mb-3"><label>Hemoglucoteste (HGT)</label><input type="number" step="0.1" name="hgt" class="form-control"></div>
+        <div class="col-md-4 mb-3"><label>PAS</label><input type="number" id="pas" class="form-control"></div>
+        <div class="col-md-4 mb-3"><label>PAD</label><input type="number" id="pad" class="form-control"></div>
+        <div class="col-md-4 mb-3"><label>FC (bpm)</label><input type="number" id="fc" class="form-control"></div>
+        <div class="col-md-4 mb-3"><label>FR (irpm)</label><input type="number" id="fr" class="form-control"></div>
+        <div class="col-md-4 mb-3"><label>Temperatura (°C)</label><input type="number" step="0.1" id="temp" class="form-control"></div>
+        <div class="col-md-4 mb-3"><label>Saturação (SpO₂)</label><input type="number" id="spo2" class="form-control"></div>
+        <div class="col-md-4 mb-3"><label>Hemoglucoteste (HGT)</label><input type="number" step="0.1" id="hgt" class="form-control"></div>
       </div>
 
       <!-- QUEIXA -->
       <div class="section-title"><span class="material-icons">monitor_heart</span> Queixa Principal</div>
-      <textarea class="form-control mb-3" name="queixa" rows="3" required></textarea>
+      <textarea class="form-control mb-3" id="queixa" rows="3" required></textarea>
 
       <!-- ESCALA DE DOR -->
       <div class="section-title"><span class="material-icons">sentiment_satisfied_alt</span> Escala de Dor</div>
       <div class="d-flex justify-content-between mb-4 align-items-center">
         <label>Intensidade (0-10)</label>
-        <input type="range" name="dor" min="0" max="10" value="0" class="form-range w-75" id="escalaDor">
+        <input type="range" id="dor" min="0" max="10" value="0" class="form-range w-75">
         <span id="dorValor" class="fw-bold text-primary">0</span>
       </div>
 
@@ -92,21 +110,21 @@
       <div class="row">
         <div class="col-md-4 mb-3">
           <label>Expressão Facial</label>
-          <select name="expressao" class="form-select">
+          <select id="expressao" class="form-select">
             <option>Normal</option>
             <option>Alterada</option>
           </select>
         </div>
         <div class="col-md-4 mb-3">
           <label>Fala</label>
-          <select name="fala" class="form-select">
+          <select id="fala" class="form-select">
             <option>Normal</option>
             <option>Alterada</option>
           </select>
         </div>
         <div class="col-md-4 mb-3">
           <label>Levantamento de Braços</label>
-          <select name="bracos" class="form-select">
+          <select id="bracos" class="form-select">
             <option>Normal</option>
             <option>Alterado</option>
           </select>
@@ -115,16 +133,14 @@
 
       <!-- CLASSIFICAÇÃO DE RISCO -->
       <div class="section-title"><span class="material-icons">traffic</span> Classificação de Risco</div>
-      <div class="d-flex justify-content-between flex-wrap mb-4" id="botoesClassificacao">
+      <div id="botoesClassificacao">
         <button type="button" class="btn btn-outline-primary" data-valor="Azul" style="border-color:#00b0f0;color:#00b0f0;">Azul</button>
         <button type="button" class="btn btn-outline-primary" data-valor="Verde" style="border-color:#00b050;color:#00b050;">Verde</button>
         <button type="button" class="btn btn-outline-primary" data-valor="Amarelo" style="border-color:#ffc000;color:#ffc000;">Amarelo</button>
         <button type="button" class="btn btn-outline-primary" data-valor="Laranja" style="border-color:#ed7d31;color:#ed7d31;">Laranja</button>
         <button type="button" class="btn btn-outline-primary" data-valor="Vermelho" style="border-color:#c00000;color:#c00000;">Vermelho</button>
       </div>
-      <input type="hidden" name="classificacao" id="classificacaoSelecionada">
 
-      <!-- BOTÕES -->
       <div class="text-center mt-4">
         <button type="submit" class="btn btn-primary btn-lg me-3">
           <span class="material-icons">send</span> Enviar Dados
@@ -139,38 +155,55 @@
   </div>
 
   <script>
-    // === Escala de dor dinâmica ===
-    const escala = document.getElementById('escalaDor');
-    const valor = document.getElementById('dorValor');
-    escala.addEventListener('input', () => valor.textContent = escala.value);
+    // === Escala de dor ===
+    const dorSlider = document.getElementById('dor');
+    const dorValor = document.getElementById('dorValor');
+    dorSlider.addEventListener('input', () => dorValor.textContent = dorSlider.value);
 
-    // === Seleção de classificação visual ===
+    // === Seleção de Classificação ===
+    let classificacaoSelecionada = "";
     const botoes = document.querySelectorAll('#botoesClassificacao .btn');
-    const campoClassificacao = document.getElementById('classificacaoSelecionada');
     botoes.forEach(btn => {
       btn.addEventListener('click', () => {
         botoes.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        campoClassificacao.value = btn.dataset.valor;
+        classificacaoSelecionada = btn.dataset.valor;
       });
     });
 
-    // === Envio JSON ===
+    // === Envio para o Google Apps Script ===
     document.getElementById('classificacaoForm').addEventListener('submit', async function (e) {
       e.preventDefault();
       const msg = document.getElementById('responseMsg');
-      const classificacao = document.getElementById('classificacaoSelecionada').value;
 
-      if (!classificacao) {
+      if (!classificacaoSelecionada) {
         msg.innerHTML = "⚠️ Selecione uma classificação antes de enviar.";
         msg.style.color = "red";
         return;
       }
 
-      msg.style.color = "black";
       msg.innerHTML = "⏳ Enviando...";
+      msg.style.color = "black";
 
-      const data = Object.fromEntries(new FormData(this).entries());
+      // Monta o JSON manualmente na ORDEM CERTA
+      const data = {
+        nome: document.getElementById('nome').value,
+        idade: document.getElementById('idade').value,
+        sexo: document.getElementById('sexo').value,
+        pas: document.getElementById('pas').value,
+        pad: document.getElementById('pad').value,
+        fc: document.getElementById('fc').value,
+        fr: document.getElementById('fr').value,
+        temp: document.getElementById('temp').value,
+        spo2: document.getElementById('spo2').value,
+        queixa: document.getElementById('queixa').value,
+        dor: document.getElementById('dor').value,
+        classificacao: classificacaoSelecionada,
+        hgt: document.getElementById('hgt').value,
+        expressao: document.getElementById('expressao').value,
+        fala: document.getElementById('fala').value,
+        bracos: document.getElementById('bracos').value
+      };
 
       try {
         await fetch("https://script.google.com/macros/s/AKfycbw96283boj1DjY5uaN9FenrpI6sEpWyNSClYVgcI1rFafQdI09jf4cUkcMTPYINLA3OQw/exec", {
@@ -179,13 +212,12 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
-
         msg.innerHTML = "✅ Dados enviados com sucesso!";
         msg.style.color = "green";
         this.reset();
-        valor.textContent = 0;
         botoes.forEach(b => b.classList.remove('active'));
-        campoClassificacao.value = "";
+        classificacaoSelecionada = "";
+        dorValor.textContent = 0;
       } catch (err) {
         console.error(err);
         msg.innerHTML = "❌ Erro ao enviar. Verifique o link do script.";
