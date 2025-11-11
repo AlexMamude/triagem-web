@@ -12,26 +12,41 @@ HTML("""
     body { background: #f4f8fb; font-family: "Poppins", sans-serif; }
     .card { border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
     h2 { color: #004b8d; margin-bottom: 20px; }
+    .btn-outline-primary {
+      border-color: #004b8d;
+      color: #004b8d;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+    .btn-outline-primary:hover {
+      background: #004b8d;
+      color: white;
+    }
   </style>
 </head>
 <body class="p-4">
-  <h2>📊 Painel de Triagem</h2>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>📊 Painel de Triagem</h2>
+    <a href="index.html" class="btn btn-outline-primary">
+      <span class="material-icons" style="vertical-align: middle;">arrow_back</span> Voltar para Formulário
+    </a>
+  </div>
 
   <div class="row mb-4">
     <div class="col-md-4">
-      <div class="card p-3">
+      <div class="card p-3 text-center">
         <h5>Total de Triagens</h5>
         <h2 id="totalTriagens">0</h2>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card p-3">
+      <div class="card p-3 text-center">
         <h5>Média de Idade</h5>
         <h2 id="mediaIdade">0</h2>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card p-3">
+      <div class="card p-3 text-center">
         <h5>Média de Dor</h5>
         <h2 id="mediaDor">0</h2>
       </div>
@@ -43,7 +58,9 @@ HTML("""
   </div>
 
   <table class="table table-striped">
-    <thead><tr><th>Nome</th><th>Idade</th><th>Dor</th><th>Queixa</th><th>FC</th><th>Temp</th></tr></thead>
+    <thead class="table-primary">
+      <tr><th>Nome</th><th>Idade</th><th>Dor</th><th>Queixa</th><th>FC</th><th>Temp</th></tr>
+    </thead>
     <tbody id="tabelaDados"></tbody>
   </table>
 
@@ -51,34 +68,60 @@ HTML("""
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqPtIJfWRRrri7Kig3n_A6ER21c_XIpLY8bf-SNNgQkTApSxl8iBlDllMbIjVdyGAWoBddefTrDSGd/pub?output=csv";
 
     async function carregarDados() {
-      const res = await fetch(sheetURL);
-      const texto = await res.text();
-      const linhas = texto.split("\\n").map(l => l.split(","));
-      const dados = linhas.slice(1).filter(r => r[0]);
+      try {
+        const res = await fetch(sheetURL);
+        const texto = await res.text();
+        const linhas = texto.split("\\n").map(l => l.split(","));
+        const dados = linhas.slice(1).filter(r => r[0].trim() !== "");
 
-      document.getElementById("totalTriagens").textContent = dados.length;
-      const idades = dados.map(r => parseInt(r[2] || 0)).filter(n => n);
-      const dores = dados.map(r => parseInt(r[11] || 0)).filter(n => n);
+        // total
+        document.getElementById("totalTriagens").textContent = dados.length;
 
-      const mediaIdade = idades.reduce((a,b)=>a+b,0)/idades.length;
-      const mediaDor = dores.reduce((a,b)=>a+b,0)/dores.length;
+        // idade e dor
+        const idades = dados.map(r => parseInt(r[2])).filter(n => !isNaN(n));
+        const dores = dados.map(r => parseInt(r[11])).filter(n => !isNaN(n));
 
-      document.getElementById("mediaIdade").textContent = Math.round(mediaIdade);
-      document.getElementById("mediaDor").textContent = Math.round(mediaDor);
+        const mediaIdade = idades.length ? (idades.reduce((a,b)=>a+b,0)/idades.length) : 0;
+        const mediaDor = dores.length ? (dores.reduce((a,b)=>a+b,0)/dores.length) : 0;
 
-      const ctx = document.getElementById("graficoDor");
-      const dist = dores.reduce((acc,v)=>{acc[v]=(acc[v]||0)+1;return acc;}, {});
-      new Chart(ctx,{
-        type:'bar',
-        data:{labels:Object.keys(dist),datasets:[{label:'Frequência de dor',data:Object.values(dist),backgroundColor:'#007bff'}]},
-        options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
-      });
+        document.getElementById("mediaIdade").textContent = Math.round(mediaIdade);
+        document.getElementById("mediaDor").textContent = Math.round(mediaDor);
 
-      const tbody = document.getElementById("tabelaDados");
-      dados.forEach(r=>{
-        const row = `<tr><td>${r[1]}</td><td>${r[2]}</td><td>${r[11]}</td><td>${r[10]}</td><td>${r[6]}</td><td>${r[9]}</td></tr>`;
-        tbody.innerHTML += row;
-      });
+        // gráfico
+        const ctx = document.getElementById("graficoDor");
+        const dist = dores.reduce((acc,v)=>{acc[v]=(acc[v]||0)+1;return acc;}, {});
+        new Chart(ctx,{
+          type:'bar',
+          data:{
+            labels:Object.keys(dist),
+            datasets:[{
+              label:'Distribuição de Dor',
+              data:Object.values(dist),
+              backgroundColor:'#007bff'
+            }]
+          },
+          options:{
+            plugins:{legend:{display:false}},
+            scales:{y:{beginAtZero:true, ticks:{stepSize:1}}}
+          }
+        });
+
+        // tabela
+        const tbody = document.getElementById("tabelaDados");
+        dados.forEach(r=>{
+          const row = `<tr>
+            <td>${r[1]}</td>
+            <td>${r[2]}</td>
+            <td>${r[11]}</td>
+            <td>${r[10]}</td>
+            <td>${r[6]}</td>
+            <td>${r[9]}</td>
+          </tr>`;
+          tbody.innerHTML += row;
+        });
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+      }
     }
 
     carregarDados();
@@ -86,4 +129,3 @@ HTML("""
 </body>
 </html>
 """)
-
