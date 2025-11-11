@@ -176,15 +176,15 @@
         </div>
       </div>
 
-      <div class="section-title"><span class="material-icons">color_lens</span> Classificação de Risco</div>
-      <div class="risk-buttons">
-        <button type="button" class="risk-btn azul" data-risk="Azul">Azul</button>
-        <button type="button" class="risk-btn verde" data-risk="Verde">Verde</button>
-        <button type="button" class="risk-btn amarelo" data-risk="Amarelo">Amarelo</button>
-        <button type="button" class="risk-btn laranja" data-risk="Laranja">Laranja</button>
-        <button type="button" class="risk-btn vermelho" data-risk="Vermelho">Vermelho</button>
-      </div>
-      <input type="hidden" name="classificacao" id="classificacao">
+      <div class="section-title"><span class="material-icons">traffic</span> Classificação de Risco</div>
+      <div class="d-flex justify-content-between flex-wrap mb-4" id="botoesClassificacao">
+        <button type="button" class="btn btn-outline-primary flex-fill m-1" data-valor="Azul" style="border-color:#00b0f0;color:#00b0f0;">Azul</button>
+        <button type="button" class="btn btn-outline-primary flex-fill m-1" data-valor="Verde" style="border-color:#00b050;color:#00b050;">Verde</button>
+        <button type="button" class="btn btn-outline-primary flex-fill m-1" data-valor="Amarelo" style="border-color:#ffc000;color:#ffc000;">Amarelo</button>
+        <button type="button" class="btn btn-outline-primary flex-fill m-1" data-valor="Laranja" style="border-color:#ed7d31;color:#ed7d31;">Laranja</button>
+        <button type="button" class="btn btn-outline-primary flex-fill m-1" data-valor="Vermelho" style="border-color:#c00000;color:#c00000;">Vermelho</button>
+        </div>
+      <input type="hidden" name="classificacao" id="classificacaoSelecionada">
 
       <div class="text-center mt-4">
         <button type="submit" class="btn btn-primary btn-lg me-3">
@@ -243,3 +243,4 @@
   </script>
 </body>
 </html>
+
