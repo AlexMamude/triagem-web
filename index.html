@@ -211,10 +211,9 @@
       console.table(data);
 
       try {
-        const response = await fetch(SCRIPT_URL, {
+        await fetch("https://corsproxy.io/?" + encodeURIComponent("https://script.google.com/macros/s/AKfycbxmVnclY7uH0XnwM1872sCvQ_q9hRy1rlaaSD-FIc2gejaCww7nyC9sqFXN_vz2JjuQGw/exec"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          mode: "cors",
           body: JSON.stringify(data)
         });
 
@@ -236,6 +235,7 @@
   </script>
 </body>
 </html>
+
 
 
 
