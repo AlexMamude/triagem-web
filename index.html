@@ -37,7 +37,7 @@
     .btn-outline-primary { border-color:#004b8d;color:#004b8d;font-weight:500; }
     .btn-outline-primary:hover { background:#004b8d;color:white; }
 
-    /* === Botões de classificação restaurados === */
+    /* === Botões de classificação (restaurados) === */
     #botoesClassificacao {
       display: flex;
       justify-content: space-between;
@@ -61,12 +61,13 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h2><span class="material-icons">medical_services</span> Classificação de Risco</h2>
 
     <form id="classificacaoForm">
-      <!-- DADOS BÁSICOS -->
+      <!-- DADOS DO PACIENTE -->
       <div class="section-title"><span class="material-icons">person_search</span> Dados do Paciente</div>
       <div class="row">
         <div class="col-md-6 mb-3"><label>Nome</label><input type="text" id="nome" class="form-control" required></div>
@@ -185,7 +186,7 @@
       msg.innerHTML = "⏳ Enviando...";
       msg.style.color = "black";
 
-      // Monta o JSON manualmente na ORDEM CERTA
+      // JSON na ordem da planilha
       const data = {
         nome: document.getElementById('nome').value,
         idade: document.getElementById('idade').value,
@@ -205,12 +206,21 @@
         bracos: document.getElementById('bracos').value
       };
 
+      // === LOGS NO CONSOLE ===
+      console.log("📦 Dados enviados ao Apps Script:");
+      console.table(data);
+      console.log("JSON completo:", JSON.stringify(data, null, 2));
+
       try {
-        await fetch("https://script.google.com/macros/s/AKfycbw96283boj1DjY5uaN9FenrpI6sEpWyNSClYVgcI1rFafQdI09jf4cUkcMTPYINLA3OQw/exec", {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbw96283boj1DjY5uaN9FenrpI6sEpWyNSClYVgcI1rFafQdI09jf4cUkcMTPYINLA3OQw/exec", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
+
+        const text = await response.text();
+        console.log("📬 Resposta do servidor:", text);
+
         msg.innerHTML = "✅ Dados enviados com sucesso!";
         msg.style.color = "green";
         this.reset();
@@ -218,7 +228,7 @@
         classificacaoSelecionada = "";
         dorValor.textContent = 0;
       } catch (err) {
-        console.error(err);
+        console.error("❌ Erro ao enviar para o Apps Script:", err);
         msg.innerHTML = "❌ Erro ao enviar. Verifique o link do script.";
         msg.style.color = "red";
       }
@@ -226,5 +236,3 @@
   </script>
 </body>
 </html>
-
-
