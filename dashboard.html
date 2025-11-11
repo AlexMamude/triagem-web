@@ -49,7 +49,7 @@
       max-width: 250px;
     }
 
-    /* === NOVO: padroniza os tamanhos dos quadrantes dos gráficos === */
+    /* === Layout padronizado e compacto dos gráficos === */
     .chart-container {
       background: white;
       border-radius: 15px;
@@ -112,7 +112,7 @@
   </div>
 
   <!-- Gráficos -->
-  <div class="row g-4 mb-4">
+  <div class="row g-4 mb-4 align-items-stretch">
     <div class="col-md-6">
       <div class="chart-container">
         <canvas id="graficoDor"></canvas>
@@ -144,21 +144,30 @@
   </table>
 
   <script>
+    // 🔗 Link atualizado da planilha publicada (CSV)
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqPtIJfWRRrri7Kig3n_A6ER21c_XIpLY8bf-SNNgQkTApSxl8iBlDllMbIjVdyGAWoBddefTrDSGd/pub?output=csv";
 
     let todosDados = [];
     let graficoDor, graficoClassificacao;
 
     async function carregarDados() {
-      const res = await fetch(sheetURL);
-      const texto = await res.text();
-      const linhas = texto.split("\n").map(l => l.split(","));
-      todosDados = linhas.slice(1).filter(r => r[0].trim() !== "");
-      atualizarDashboard("Todos");
+      try {
+        const res = await fetch(sheetURL);
+        const texto = await res.text();
+
+        // Divide em linhas e colunas
+        const linhas = texto.split("\n").map(l => l.split(","));
+        // Remove linhas vazias e mantém tudo (sem depender de cabeçalhos)
+        todosDados = linhas.filter(r => r[0]?.trim() !== "");
+
+        atualizarDashboard("Todos");
+      } catch (e) {
+        console.error("Erro ao carregar CSV:", e);
+      }
     }
 
     function atualizarDashboard(filtro) {
-      const dados = filtro === "Todos" ? todosDados : todosDados.filter(r => r[12] === filtro);
+      const dados = filtro === "Todos" ? todosDados.slice(1) : todosDados.slice(1).filter(r => r[12] === filtro);
 
       // Indicadores principais
       document.getElementById("totalClassificacoes").textContent = dados.length || 0;
@@ -169,8 +178,8 @@
       const mediaIdade = idades.length ? (idades.reduce((a,b)=>a+b,0)/idades.length) : 0;
       const mediaDor = dores.length ? (dores.reduce((a,b)=>a+b,0)/dores.length) : 0;
 
-      document.getElementById("mediaIdade").textContent = Math.round(mediaIdade) || 0;
-      document.getElementById("mediaDor").textContent = Math.round(mediaDor) || 0;
+      document.getElementById("mediaIdade").textContent = Math.round(mediaIdade);
+      document.getElementById("mediaDor").textContent = Math.round(mediaDor);
 
       // === Gráfico de Dor ===
       const ctxDor = document.getElementById("graficoDor");
@@ -197,9 +206,12 @@
       const cores = ['#00b0f0','#00b050','#ffc000','#ed7d31','#c00000'];
       const labelsClass = ['Azul','Verde','Amarelo','Laranja','Vermelho'];
       const contagem = {Azul:0,Verde:0,Amarelo:0,Laranja:0,Vermelho:0};
-      todosDados.forEach(r => {
-        if (contagem[r[12]] !== undefined) contagem[r[12]]++;
+
+      dados.forEach(r => {
+        const c = r[12]?.trim();
+        if (contagem[c] !== undefined) contagem[c]++;
       });
+
       if (graficoClassificacao) graficoClassificacao.destroy();
       graficoClassificacao = new Chart(ctxClass,{
         type:'doughnut',
@@ -258,4 +270,3 @@
   </script>
 </body>
 </html>
-
