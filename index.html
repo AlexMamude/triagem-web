@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classificação de Risco - Triagem</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      background: #f4f8fb;
+      font-family: "Poppins", sans-serif;
+    }
+    .container {
+      max-width: 1000px;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-top: 30px;
+    }
+    h2 {
+      color: #004b8d;
+      font-weight: 600;
+      margin-bottom: 25px;
+    }
+    .section-title {
+      background: #e7f0fa;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-weight: 600;
+      color: #004b8d;
+      margin-top: 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .material-icons {
+      color: #004b8d;
+      vertical-align: middle;
+    }
+    .btn-primary {
+      background: #004b8d;
+      border: none;
+    }
+    .btn-primary:hover {
+      background: #0360b2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><span class="material-icons">medical_services</span> Classificação de Risco - Triagem</h2>
+    <form id="triagemForm">
+
+      <div class="section-title"><span class="material-icons">person_search</span> Dados do Paciente</div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label>Nome do Paciente</label>
+          <input type="text" name="nome" class="form-control" required>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label>Idade</label>
+          <input type="number" name="idade" class="form-control">
+        </div>
+        <div class="col-md-3 mb-3">
+          <label>Sexo</label>
+          <select name="sexo" class="form-select">
+            <option value="">Selecione</option>
+            <option>Masculino</option>
+            <option>Feminino</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-title"><span class="material-icons">healing</span> Sinais Vitais</div>
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label>PAS</label>
+          <input type="number" name="pas" class="form-control">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label>PAD</label>
+          <input type="number" name="pad" class="form-control">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label>FC (bpm)</label>
+          <input type="number" name="fc" class="form-control">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label>FR (irpm)</label>
+          <input type="number" name="fr" class="form-control">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label>Temperatura (°C)</label>
+          <input type="number" step="0.1" name="temp" class="form-control">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label>Saturação (SpO₂)</label>
+          <input type="number" name="spo2" class="form-control">
+        </div>
+      </div>
+
+      <div class="section-title"><span class="material-icons">monitor_heart</span> Queixa Principal</div>
+      <textarea class="form-control mb-3" name="queixa" rows="3" required></textarea>
+
+      <div class="section-title"><span class="material-icons">sentiment_satisfied_alt</span> Escala de Dor</div>
+      <div class="d-flex justify-content-between mb-4">
+        <label>Intensidade da Dor (0-10)</label>
+        <input type="range" name="dor" min="0" max="10" value="0" class="form-range w-75" id="escalaDor">
+        <span id="dorValor" class="fw-bold text-primary">0</span>
+      </div>
+
+      <div class="section-title"><span class="material-icons">psychology</span> Escala de Cincinnati</div>
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label>Expressão Facial</label>
+          <select name="expressao" class="form-select">
+            <option>Normal</option>
+            <option>Alterada</option>
+          </select>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label>Fala</label>
+          <select name="fala" class="form-select">
+            <option>Normal</option>
+            <option>Alterada</option>
+          </select>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label>Levantamento de Braços</label>
+          <select name="bracos" class="form-select">
+            <option>Normal</option>
+            <option>Alterado</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-primary btn-lg">
+          <span class="material-icons">send</span> Enviar Dados
+        </button>
+      </div>
+    </form>
+
+    <div id="responseMsg" class="mt-4 text-center fw-bold"></div>
+  </div>
+
+  <script>
+    const escala = document.getElementById('escalaDor');
+    const valor = document.getElementById('dorValor');
+    escala.addEventListener('input', () => valor.textContent = escala.value);
+
+    document.getElementById('triagemForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(this).entries());
+      const sheetURL = "https://script.google.com/macros/s/SEU_WEB_APP_URL/exec";
+      const msg = document.getElementById('responseMsg');
+      msg.innerHTML = "⏳ Enviando...";
+      try {
+        await fetch(sheetURL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data)
+        });
+        msg.innerHTML = "✅ Dados enviados com sucesso!";
+        this.reset();
+        valor.textContent = 0;
+      } catch {
+        msg.innerHTML = "❌ Erro ao enviar. Verifique o link do script.";
+      }
+    });
+  </script>
+</body>
+</html>
