@@ -51,19 +51,22 @@
 
     /* === NOVO: padroniza os tamanhos dos quadrantes dos gráficos === */
     .chart-container {
-      height: 380px;
       background: white;
       border-radius: 15px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      padding: 20px;
+      padding: 25px;
       display: flex;
       align-items: center;
       justify-content: center;
+      aspect-ratio: 1 / 1; /* mantém proporção quadrada */
+      max-height: 400px;   /* limita altura máxima */
+      margin: auto;
     }
 
     .chart-container canvas {
-      width: 100% !important;
-      height: 100% !important;
+      width: 90% !important;
+      height: auto !important;
+      max-height: 90% !important;
     }
   </style>
 </head>
@@ -255,3 +258,4 @@
   </script>
 </body>
 </html>
+
