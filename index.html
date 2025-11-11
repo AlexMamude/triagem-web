@@ -208,7 +208,6 @@
       try {
         await fetch("https://script.google.com/macros/s/AKfycbw96283boj1DjY5uaN9FenrpI6sEpWyNSClYVgcI1rFafQdI09jf4cUkcMTPYINLA3OQw/exec", {
           method: "POST",
-          mode: "no-cors",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
@@ -227,3 +226,4 @@
   </script>
 </body>
 </html>
+
