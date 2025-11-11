@@ -19,11 +19,7 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       margin-top: 30px;
     }
-    h2 {
-      color: #004b8d;
-      font-weight: 600;
-      margin-bottom: 25px;
-    }
+    h2 { color:#004b8d;font-weight:600;margin-bottom:25px; }
     .section-title {
       background: #e7f0fa;
       padding: 10px 15px;
@@ -35,42 +31,11 @@
       align-items: center;
       gap: 10px;
     }
-    .material-icons {
-      color: #004b8d;
-      vertical-align: middle;
-    }
-    .btn-primary {
-      background: #004b8d;
-      border: none;
-    }
-    .btn-primary:hover {
-      background: #0360b2;
-    }
-    .btn-outline-primary {
-      border-color: #004b8d;
-      color: #004b8d;
-      font-weight: 500;
-    }
-    .btn-outline-primary:hover {
-      background: #004b8d;
-      color: white;
-    }
-
-    /* Botões de classificação de risco */
-    #botoesClassificacao {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 15px;
-    }
-    #botoesClassificacao .btn {
-      flex: 1;
-      font-weight: bold;
-      border-width: 2px;
-      transition: all 0.3s ease;
-      background: white;
-    }
+    .material-icons { color:#004b8d;vertical-align:middle; }
+    .btn-primary { background:#004b8d;border:none; }
+    .btn-primary:hover { background:#0360b2; }
+    .btn-outline-primary { border-color:#004b8d;color:#004b8d;font-weight:500; }
+    .btn-outline-primary:hover { background:#004b8d;color:white; }
     #botoesClassificacao .btn.active {
       background-color: #f1f1f1 !important;
       box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
@@ -83,16 +48,11 @@
     <h2><span class="material-icons">medical_services</span> Classificação de Risco</h2>
 
     <form id="classificacaoForm">
+      <!-- DADOS BÁSICOS -->
       <div class="section-title"><span class="material-icons">person_search</span> Dados do Paciente</div>
       <div class="row">
-        <div class="col-md-6 mb-3">
-          <label>Nome do Paciente</label>
-          <input type="text" name="nome" class="form-control" required>
-        </div>
-        <div class="col-md-3 mb-3">
-          <label>Idade</label>
-          <input type="number" name="idade" class="form-control">
-        </div>
+        <div class="col-md-6 mb-3"><label>Nome</label><input type="text" name="nome" class="form-control" required></div>
+        <div class="col-md-3 mb-3"><label>Idade</label><input type="number" name="idade" class="form-control"></div>
         <div class="col-md-3 mb-3">
           <label>Sexo</label>
           <select name="sexo" class="form-select">
@@ -103,6 +63,7 @@
         </div>
       </div>
 
+      <!-- SINAIS VITAIS -->
       <div class="section-title"><span class="material-icons">healing</span> Sinais Vitais</div>
       <div class="row">
         <div class="col-md-4 mb-3"><label>PAS</label><input type="number" name="pas" class="form-control"></div>
@@ -114,16 +75,19 @@
         <div class="col-md-4 mb-3"><label>Hemoglucoteste (HGT)</label><input type="number" step="0.1" name="hgt" class="form-control"></div>
       </div>
 
+      <!-- QUEIXA -->
       <div class="section-title"><span class="material-icons">monitor_heart</span> Queixa Principal</div>
       <textarea class="form-control mb-3" name="queixa" rows="3" required></textarea>
 
+      <!-- ESCALA DE DOR -->
       <div class="section-title"><span class="material-icons">sentiment_satisfied_alt</span> Escala de Dor</div>
       <div class="d-flex justify-content-between mb-4 align-items-center">
-        <label>Intensidade da Dor (0-10)</label>
+        <label>Intensidade (0-10)</label>
         <input type="range" name="dor" min="0" max="10" value="0" class="form-range w-75" id="escalaDor">
         <span id="dorValor" class="fw-bold text-primary">0</span>
       </div>
 
+      <!-- ESCALA DE CINCINNATI -->
       <div class="section-title"><span class="material-icons">psychology</span> Escala de Cincinnati</div>
       <div class="row">
         <div class="col-md-4 mb-3">
@@ -149,6 +113,7 @@
         </div>
       </div>
 
+      <!-- CLASSIFICAÇÃO DE RISCO -->
       <div class="section-title"><span class="material-icons">traffic</span> Classificação de Risco</div>
       <div class="d-flex justify-content-between flex-wrap mb-4" id="botoesClassificacao">
         <button type="button" class="btn btn-outline-primary" data-valor="Azul" style="border-color:#00b0f0;color:#00b0f0;">Azul</button>
@@ -159,6 +124,7 @@
       </div>
       <input type="hidden" name="classificacao" id="classificacaoSelecionada">
 
+      <!-- BOTÕES -->
       <div class="text-center mt-4">
         <button type="submit" class="btn btn-primary btn-lg me-3">
           <span class="material-icons">send</span> Enviar Dados
@@ -173,12 +139,12 @@
   </div>
 
   <script>
-    // Escala de dor
+    // === Escala de dor dinâmica ===
     const escala = document.getElementById('escalaDor');
     const valor = document.getElementById('dorValor');
     escala.addEventListener('input', () => valor.textContent = escala.value);
 
-    // Seleção de classificação visual
+    // === Seleção de classificação visual ===
     const botoes = document.querySelectorAll('#botoesClassificacao .btn');
     const campoClassificacao = document.getElementById('classificacaoSelecionada');
     botoes.forEach(btn => {
@@ -189,14 +155,14 @@
       });
     });
 
-    // Envio do formulário (JSON compatível com Apps Script)
+    // === Envio JSON ===
     document.getElementById('classificacaoForm').addEventListener('submit', async function (e) {
       e.preventDefault();
       const msg = document.getElementById('responseMsg');
       const classificacao = document.getElementById('classificacaoSelecionada').value;
 
       if (!classificacao) {
-        msg.innerHTML = "⚠️ Selecione uma classificação de risco antes de enviar.";
+        msg.innerHTML = "⚠️ Selecione uma classificação antes de enviar.";
         msg.style.color = "red";
         return;
       }
