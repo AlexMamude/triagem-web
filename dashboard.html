@@ -1,6 +1,3 @@
-from IPython.display import HTML
-
-HTML("""
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -10,34 +7,65 @@ HTML("""
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
-    body { background: #f4f8fb; font-family: "Poppins", sans-serif; }
-    .card { border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-    h2 { color: #004b8d; margin-bottom: 20px; }
+    body {
+      background: #f4f8fb;
+      font-family: "Poppins", sans-serif;
+    }
+    .card {
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    h2 {
+      color: #004b8d;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
     .btn-outline-primary {
       border-color: #004b8d;
       color: #004b8d;
       font-weight: 500;
-      margin-bottom: 20px;
     }
     .btn-outline-primary:hover {
       background: #004b8d;
       color: white;
+    }
+    .table thead {
+      background: #004b8d;
+      color: white;
+    }
+    .no-data {
+      text-align: center;
+      color: #888;
+      padding: 20px;
+    }
+    .filter-select {
+      max-width: 250px;
     }
   </style>
 </head>
 <body class="p-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>📊 Painel de Classificação de Risco</h2>
-    <a href="index.html" class="btn btn-outline-primary">
-      <span class="material-icons" style="vertical-align: middle;">arrow_back</span> Voltar para Formulário
-    </a>
+    <div>
+      <select id="filtroClassificacao" class="form-select filter-select d-inline-block me-2">
+        <option value="Todos">Todas as Classificações</option>
+        <option value="Azul">Azul</option>
+        <option value="Verde">Verde</option>
+        <option value="Amarelo">Amarelo</option>
+        <option value="Laranja">Laranja</option>
+        <option value="Vermelho">Vermelho</option>
+      </select>
+      <a href="index.html" class="btn btn-outline-primary">
+        <span class="material-icons" style="vertical-align: middle;">arrow_back</span> Voltar para Formulário
+      </a>
+    </div>
   </div>
 
   <div class="row mb-4">
     <div class="col-md-4">
       <div class="card p-3 text-center">
         <h5>Total de Classificações</h5>
-        <h2 id="totalTriagens">0</h2>
+        <h2 id="totalClassificacoes">0</h2>
       </div>
     </div>
     <div class="col-md-4">
@@ -54,85 +82,148 @@ HTML("""
     </div>
   </div>
 
-  <div class="card p-3 mb-4">
-    <canvas id="graficoDor"></canvas>
+  <div class="row g-4 mb-4">
+    <div class="col-md-6">
+      <div class="card p-3">
+        <canvas id="graficoDor"></canvas>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card p-3">
+        <canvas id="graficoClassificacao"></canvas>
+      </div>
+    </div>
   </div>
 
-  <table class="table table-striped">
-    <thead class="table-primary">
-      <tr><th>Nome</th><th>Idade</th><th>Dor</th><th>Queixa</th><th>FC</th><th>Temp</th></tr>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Idade</th>
+        <th>Dor</th>
+        <th>Queixa</th>
+        <th>FC</th>
+        <th>Temp</th>
+        <th>Classificação</th>
+      </tr>
     </thead>
-    <tbody id="tabelaDados"></tbody>
+    <tbody id="tabelaDados">
+      <tr><td colspan="7" class="no-data">Nenhum registro encontrado</td></tr>
+    </tbody>
   </table>
 
   <script>
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqPtIJfWRRrri7Kig3n_A6ER21c_XIpLY8bf-SNNgQkTApSxl8iBlDllMbIjVdyGAWoBddefTrDSGd/pub?output=csv";
 
+    let todosDados = [];
+    let graficoDor, graficoClassificacao;
+
     async function carregarDados() {
-      try {
-        const res = await fetch(sheetURL);
-        const texto = await res.text();
-        const linhas = texto.split("\\n").map(l => l.split(","));
-        const dados = linhas.slice(1).filter(r => r[0].trim() !== "");
+      const res = await fetch(sheetURL);
+      const texto = await res.text();
+      const linhas = texto.split("\\n").map(l => l.split(","));
+      todosDados = linhas.slice(1).filter(r => r[0].trim() !== "");
+      atualizarDashboard("Todos");
+    }
 
-        // total
-        const total = dados.length || 0;
-        document.getElementById("totalTriagens").textContent = total;
+    function atualizarDashboard(filtro) {
+      const dados = filtro === "Todos" ? todosDados : todosDados.filter(r => r[12] === filtro);
 
-        // idade e dor
-        const idades = dados.map(r => parseInt(r[2])).filter(n => !isNaN(n));
-        const dores = dados.map(r => parseInt(r[11])).filter(n => !isNaN(n));
+      // Indicadores principais
+      document.getElementById("totalClassificacoes").textContent = dados.length || 0;
 
-        const mediaIdade = idades.length ? (idades.reduce((a,b)=>a+b,0)/idades.length) : 0;
-        const mediaDor = dores.length ? (dores.reduce((a,b)=>a+b,0)/dores.length) : 0;
+      const idades = dados.map(r => parseInt(r[2])).filter(n => !isNaN(n));
+      const dores = dados.map(r => parseInt(r[11])).filter(n => !isNaN(n));
 
-        document.getElementById("mediaIdade").textContent = Math.round(mediaIdade) || 0;
-        document.getElementById("mediaDor").textContent = Math.round(mediaDor) || 0;
+      const mediaIdade = idades.length ? (idades.reduce((a,b)=>a+b,0)/idades.length) : 0;
+      const mediaDor = dores.length ? (dores.reduce((a,b)=>a+b,0)/dores.length) : 0;
 
-        // gráfico
-        const ctx = document.getElementById("graficoDor");
-        const dist = dores.reduce((acc,v)=>{acc[v]=(acc[v]||0)+1;return acc;}, {});
-        new Chart(ctx,{
-          type:'bar',
-          data:{
-            labels:Object.keys(dist).length ? Object.keys(dist) : ["Sem dados"],
-            datasets:[{
-              label:'Distribuição de Dor',
-              data:Object.values(dist).length ? Object.values(dist) : [0],
-              backgroundColor:'#007bff'
-            }]
-          },
-          options:{
-            plugins:{legend:{display:false}},
-            scales:{y:{beginAtZero:true, ticks:{stepSize:1}}}
-          }
-        });
+      document.getElementById("mediaIdade").textContent = Math.round(mediaIdade) || 0;
+      document.getElementById("mediaDor").textContent = Math.round(mediaDor) || 0;
 
-        // tabela
-        const tbody = document.getElementById("tabelaDados");
-        if (dados.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Nenhum registro encontrado</td></tr>`;
-        } else {
-          dados.forEach(r=>{
-            const row = `<tr>
-              <td>${r[1] || "-"}</td>
-              <td>${r[2] || "0"}</td>
-              <td>${r[11] || "0"}</td>
-              <td>${r[10] || "-"}</td>
-              <td>${r[6] || "0"}</td>
-              <td>${r[9] || "0"}</td>
-            </tr>`;
-            tbody.innerHTML += row;
-          });
+      // Gráfico de Dor
+      const ctxDor = document.getElementById("graficoDor");
+      const distDor = dores.reduce((acc,v)=>{acc[v]=(acc[v]||0)+1;return acc;}, {});
+      if (graficoDor) graficoDor.destroy();
+      graficoDor = new Chart(ctxDor,{
+        type:'bar',
+        data:{
+          labels:Object.keys(distDor).length ? Object.keys(distDor) : ["Sem dados"],
+          datasets:[{
+            label:'Distribuição da Escala de Dor',
+            data:Object.values(distDor).length ? Object.values(distDor) : [0],
+            backgroundColor:'#007bff'
+          }]
+        },
+        options:{
+          plugins:{legend:{display:false}},
+          scales:{y:{beginAtZero:true, ticks:{stepSize:1}}}
         }
-      } catch (error) {
-        console.error("Erro ao carregar dados:", error);
-        document.body.innerHTML += '<div class="alert alert-danger mt-3">Erro ao carregar dados. Verifique o link da planilha.</div>';
+      });
+
+      // Gráfico de Classificação (pizza)
+      const ctxClass = document.getElementById("graficoClassificacao");
+      const cores = ['#00b0f0','#00b050','#ffc000','#ed7d31','#c00000'];
+      const labelsClass = ['Azul','Verde','Amarelo','Laranja','Vermelho'];
+      const contagem = {Azul:0,Verde:0,Amarelo:0,Laranja:0,Vermelho:0};
+      todosDados.forEach(r => {
+        if (contagem[r[12]] !== undefined) contagem[r[12]]++;
+      });
+      if (graficoClassificacao) graficoClassificacao.destroy();
+      graficoClassificacao = new Chart(ctxClass,{
+        type:'doughnut',
+        data:{
+          labels:labelsClass,
+          datasets:[{
+            data:Object.values(contagem),
+            backgroundColor:cores
+          }]
+        },
+        options:{
+          plugins:{
+            legend:{position:'bottom'},
+            title:{display:true,text:'Distribuição por Classificação de Risco'}
+          }
+        }
+      });
+
+      // Tabela
+      const tbody = document.getElementById("tabelaDados");
+      tbody.innerHTML = "";
+      if (dados.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="no-data">Nenhum registro encontrado</td></tr>`;
+      } else {
+        dados.forEach(r=>{
+          const row = `<tr>
+            <td>${r[1] || "-"}</td>
+            <td>${r[2] || "0"}</td>
+            <td>${r[11] || "0"}</td>
+            <td>${r[10] || "-"}</td>
+            <td>${r[6] || "0"}</td>
+            <td>${r[9] || "0"}</td>
+            <td><span style="font-weight:bold;color:${corClassificacao(r[12])}">${r[12] || "-"}</span></td>
+          </tr>`;
+          tbody.innerHTML += row;
+        });
       }
     }
+
+    function corClassificacao(cor) {
+      switch(cor) {
+        case "Azul": return "#00b0f0";
+        case "Verde": return "#00b050";
+        case "Amarelo": return "#ffc000";
+        case "Laranja": return "#ed7d31";
+        case "Vermelho": return "#c00000";
+        default: return "#000";
+      }
+    }
+
+    document.getElementById("filtroClassificacao").addEventListener("change", (e)=>{
+      atualizarDashboard(e.target.value);
+    });
 
     carregarDados();
   </script>
 </body>
 </html>
-""")
