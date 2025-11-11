@@ -32,6 +32,7 @@
     .card {
       border-radius: 15px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      background: white;
     }
 
     .table thead {
@@ -49,8 +50,17 @@
       max-width: 250px;
     }
 
-    /* === Layout padronizado e compacto dos gráficos === */
-    .chart-container {
+    /* === Gráficos harmonizados === */
+    .charts-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .chart-box {
+      flex: 1;
+      min-width: 350px;
       background: white;
       border-radius: 15px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -58,15 +68,32 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      aspect-ratio: 1 / 1; /* mantém proporção quadrada */
-      max-height: 400px;   /* limita altura máxima */
-      margin: auto;
+      height: 420px;
     }
 
-    .chart-container canvas {
-      width: 90% !important;
-      height: auto !important;
-      max-height: 90% !important;
+    .chart-box canvas {
+      width: 95% !important;
+      height: 95% !important;
+    }
+
+    /* Indicadores */
+    .indicator-card {
+      text-align: center;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      height: 100%;
+    }
+
+    .indicator-card h5 {
+      color: #555;
+    }
+
+    .indicator-card h2 {
+      color: #004b8d;
+      font-weight: bold;
+      margin: 0;
     }
   </style>
 </head>
@@ -90,38 +117,19 @@
   </div>
 
   <!-- Indicadores -->
-  <div class="row mb-4">
-    <div class="col-md-4">
-      <div class="card p-3 text-center">
-        <h5>Total de Classificações</h5>
-        <h2 id="totalClassificacoes">0</h2>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card p-3 text-center">
-        <h5>Média de Idade</h5>
-        <h2 id="mediaIdade">0</h2>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card p-3 text-center">
-        <h5>Média de Dor</h5>
-        <h2 id="mediaDor">0</h2>
-      </div>
-    </div>
+  <div class="row mb-4 g-4">
+    <div class="col-md-4"><div class="indicator-card"><h5>Total de Classificações</h5><h2 id="totalClassificacoes">0</h2></div></div>
+    <div class="col-md-4"><div class="indicator-card"><h5>Média de Idade</h5><h2 id="mediaIdade">0</h2></div></div>
+    <div class="col-md-4"><div class="indicator-card"><h5>Média de Dor</h5><h2 id="mediaDor">0</h2></div></div>
   </div>
 
   <!-- Gráficos -->
-  <div class="row g-4 mb-4 align-items-stretch">
-    <div class="col-md-6">
-      <div class="chart-container">
-        <canvas id="graficoDor"></canvas>
-      </div>
+  <div class="charts-row">
+    <div class="chart-box">
+      <canvas id="graficoDor"></canvas>
     </div>
-    <div class="col-md-6">
-      <div class="chart-container">
-        <canvas id="graficoClassificacao"></canvas>
-      </div>
+    <div class="chart-box">
+      <canvas id="graficoClassificacao"></canvas>
     </div>
   </div>
 
@@ -144,7 +152,7 @@
   </table>
 
   <script>
-    // 🔗 Link atualizado da planilha publicada (CSV)
+    // 🔗 Link da planilha (publicada como CSV)
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqPtIJfWRRrri7Kig3n_A6ER21c_XIpLY8bf-SNNgQkTApSxl8iBlDllMbIjVdyGAWoBddefTrDSGd/pub?output=csv";
 
     let todosDados = [];
@@ -154,12 +162,8 @@
       try {
         const res = await fetch(sheetURL);
         const texto = await res.text();
-
-        // Divide em linhas e colunas
         const linhas = texto.split("\n").map(l => l.split(","));
-        // Remove linhas vazias e mantém tudo (sem depender de cabeçalhos)
         todosDados = linhas.filter(r => r[0]?.trim() !== "");
-
         atualizarDashboard("Todos");
       } catch (e) {
         console.error("Erro ao carregar CSV:", e);
@@ -169,7 +173,6 @@
     function atualizarDashboard(filtro) {
       const dados = filtro === "Todos" ? todosDados.slice(1) : todosDados.slice(1).filter(r => r[12] === filtro);
 
-      // Indicadores principais
       document.getElementById("totalClassificacoes").textContent = dados.length || 0;
 
       const idades = dados.map(r => parseInt(r[2])).filter(n => !isNaN(n));
@@ -206,12 +209,10 @@
       const cores = ['#00b0f0','#00b050','#ffc000','#ed7d31','#c00000'];
       const labelsClass = ['Azul','Verde','Amarelo','Laranja','Vermelho'];
       const contagem = {Azul:0,Verde:0,Amarelo:0,Laranja:0,Vermelho:0};
-
       dados.forEach(r => {
         const c = r[12]?.trim();
         if (contagem[c] !== undefined) contagem[c]++;
       });
-
       if (graficoClassificacao) graficoClassificacao.destroy();
       graficoClassificacao = new Chart(ctxClass,{
         type:'doughnut',
