@@ -56,7 +56,7 @@
       color: white;
     }
 
-    /* === Botões de classificação de risco === */
+    /* Botões de classificação de risco */
     #botoesClassificacao {
       display: flex;
       justify-content: space-between;
@@ -204,7 +204,7 @@
       msg.style.color = "black";
       msg.innerHTML = "⏳ Enviando...";
 
-      const data = Object.fromEntries(new FormData(this).entries()); // ← cria JSON
+      const data = Object.fromEntries(new FormData(this).entries());
 
       try {
         await fetch("https://script.google.com/macros/s/AKfycbw96283boj1DjY5uaN9FenrpI6sEpWyNSClYVgcI1rFafQdI09jf4cUkcMTPYINLA3OQw/exec", {
