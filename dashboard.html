@@ -14,8 +14,14 @@
 
     h2 {
       color: #004b8d;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       font-weight: 600;
+    }
+
+    #ultimaAtualizacao {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 25px;
     }
 
     .btn-outline-primary {
@@ -95,6 +101,16 @@
       font-weight: bold;
       margin: 0;
     }
+
+    table td, table th {
+      vertical-align: middle;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    table td span {
+      font-weight: bold;
+    }
   </style>
 </head>
 
@@ -116,6 +132,8 @@
     </div>
   </div>
 
+  <div id="ultimaAtualizacao">Última atualização: --:--:--</div>
+
   <!-- Indicadores -->
   <div class="row mb-4 g-4">
     <div class="col-md-4"><div class="indicator-card"><h5>Total de Classificações</h5><h2 id="totalClassificacoes">0</h2></div></div>
@@ -134,25 +152,35 @@
   </div>
 
   <!-- Tabela -->
-  <table class="table table-striped table-hover">
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Idade</th>
-        <th>Dor</th>
-        <th>Queixa</th>
-        <th>FC</th>
-        <th>Temp</th>
-        <th>Classificação</th>
-      </tr>
-    </thead>
-    <tbody id="tabelaDados">
-      <tr><td colspan="7" class="no-data">Nenhum registro encontrado</td></tr>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Idade</th>
+          <th>Sexo</th>
+          <th>PAS</th>
+          <th>PAD</th>
+          <th>FC</th>
+          <th>FR</th>
+          <th>Temp</th>
+          <th>SpO₂</th>
+          <th>HGT</th>
+          <th>Dor</th>
+          <th>Expressão</th>
+          <th>Fala</th>
+          <th>Braços</th>
+          <th>Queixa</th>
+          <th>Classificação</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaDados">
+        <tr><td colspan="16" class="no-data">Nenhum registro encontrado</td></tr>
+      </tbody>
+    </table>
+  </div>
 
   <script>
-    // 🔗 Link da planilha publicada como CSV
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqPtIJfWRRrri7Kig3n_A6ER21c_XIpLY8bf-SNNgQkTApSxl8iBlDllMbIjVdyGAWoBddefTrDSGd/pub?output=csv";
 
     let todosDados = [];
@@ -165,6 +193,11 @@
         const linhas = texto.split("\n").map(l => l.split(","));
         todosDados = linhas.filter(r => r[0]?.trim() !== "");
         atualizarDashboard("Todos");
+
+        // Atualiza o horário da última atualização
+        const agora = new Date();
+        const hora = agora.toLocaleTimeString("pt-BR", {hour12:false});
+        document.getElementById("ultimaAtualizacao").textContent = "Última atualização: " + hora;
       } catch (e) {
         console.error("Erro ao carregar CSV:", e);
       }
@@ -229,35 +262,44 @@
             legend:{
               position:'bottom',
               labels:{
-                font:{size:11}, // 🔹 legenda menor
+                font:{size:11},
                 padding:10
               }
             },
             title:{
               display:true,
               text:'Distribuição por Classificação de Risco',
-              font:{size:14, weight:'600'}, // 🔹 título menor
+              font:{size:14, weight:'600'},
               padding:{bottom:10}
             }
           }
         }
       });
 
-      // === Tabela ===
+      // === Tabela completa ===
       const tbody = document.getElementById("tabelaDados");
       tbody.innerHTML = "";
       if (dados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="no-data">Nenhum registro encontrado</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="16" class="no-data">Nenhum registro encontrado</td></tr>`;
       } else {
         dados.forEach(r=>{
           const row = `<tr>
             <td>${r[1] || "-"}</td>
-            <td>${r[2] || "0"}</td>
-            <td>${r[11] || "0"}</td>
+            <td>${r[2] || "-"}</td>
+            <td>${r[3] || "-"}</td>
+            <td>${r[4] || "-"}</td>
+            <td>${r[5] || "-"}</td>
+            <td>${r[6] || "-"}</td>
+            <td>${r[7] || "-"}</td>
+            <td>${r[8] || "-"}</td>
+            <td>${r[9] || "-"}</td>
+            <td>${r[13] || "-"}</td>
+            <td>${r[11] || "-"}</td>
+            <td>${r[14] || "-"}</td>
+            <td>${r[15] || "-"}</td>
+            <td>${r[16] || "-"}</td>
             <td>${r[10] || "-"}</td>
-            <td>${r[6] || "0"}</td>
-            <td>${r[9] || "0"}</td>
-            <td><span style="font-weight:bold;color:${corClassificacao(r[12])}">${r[12] || "-"}</span></td>
+            <td><span style="color:${corClassificacao(r[12])}">${r[12] || "-"}</span></td>
           </tr>`;
           tbody.innerHTML += row;
         });
@@ -280,7 +322,6 @@
     });
 
     carregarDados();
-    // Atualiza automaticamente a cada 30 segundos
     setInterval(carregarDados, 30000);
   </script>
 </body>
