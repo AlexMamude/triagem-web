@@ -50,7 +50,7 @@
       max-width: 250px;
     }
 
-    /* === Gráficos harmonizados === */
+    /* Layout dos gráficos */
     .charts-row {
       display: flex;
       flex-wrap: wrap;
@@ -152,7 +152,7 @@
   </table>
 
   <script>
-    // 🔗 Link da planilha (publicada como CSV)
+    // 🔗 Link da planilha publicada como CSV
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqPtIJfWRRrri7Kig3n_A6ER21c_XIpLY8bf-SNNgQkTApSxl8iBlDllMbIjVdyGAWoBddefTrDSGd/pub?output=csv";
 
     let todosDados = [];
@@ -224,9 +224,21 @@
           }]
         },
         options:{
+          animation:{duration:800,easing:'easeInOutQuart'},
           plugins:{
-            legend:{position:'bottom'},
-            title:{display:true,text:'Distribuição por Classificação de Risco'}
+            legend:{
+              position:'bottom',
+              labels:{
+                font:{size:11}, // 🔹 legenda menor
+                padding:10
+              }
+            },
+            title:{
+              display:true,
+              text:'Distribuição por Classificação de Risco',
+              font:{size:14, weight:'600'}, // 🔹 título menor
+              padding:{bottom:10}
+            }
           }
         }
       });
@@ -268,6 +280,8 @@
     });
 
     carregarDados();
+    // Atualiza automaticamente a cada 30 segundos
+    setInterval(carregarDados, 30000);
   </script>
 </body>
 </html>
