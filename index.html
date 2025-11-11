@@ -37,7 +37,7 @@
     .btn-outline-primary { border-color:#004b8d;color:#004b8d;font-weight:500; }
     .btn-outline-primary:hover { background:#004b8d;color:white; }
 
-    /* === Botões de classificação (restaurados) === */
+    /* Botões de classificação */
     #botoesClassificacao {
       display: flex;
       justify-content: space-between;
@@ -163,7 +163,7 @@
     const dorValor = document.getElementById('dorValor');
     dorSlider.addEventListener('input', () => dorValor.textContent = dorSlider.value);
 
-    // Seleção de Classificação
+    // Seleção de classificação
     let classificacaoSelecionada = "";
     const botoes = document.querySelectorAll('#botoesClassificacao .btn');
     botoes.forEach(btn => {
@@ -174,7 +174,7 @@
       });
     });
 
-    // Envio dos dados
+    // Envio para o Google Apps Script
     document.getElementById('classificacaoForm').addEventListener('submit', async function (e) {
       e.preventDefault();
       const msg = document.getElementById('responseMsg');
@@ -189,36 +189,22 @@
       msg.style.color = "black";
 
       const data = {
-        nome: nome.value,
-        idade: idade.value,
-        sexo: sexo.value,
-        pas: pas.value,
-        pad: pad.value,
-        fc: fc.value,
-        fr: fr.value,
-        temp: temp.value,
-        spo2: spo2.value,
-        queixa: queixa.value,
-        dor: dor.value,
-        classificacao: classificacaoSelecionada,
-        hgt: hgt.value,
-        expressao: expressao.value,
-        fala: fala.value,
-        bracos: bracos.value
+        nome: nome.value, idade: idade.value, sexo: sexo.value,
+        pas: pas.value, pad: pad.value, fc: fc.value, fr: fr.value,
+        temp: temp.value, spo2: spo2.value, queixa: queixa.value,
+        dor: dor.value, classificacao: classificacaoSelecionada,
+        hgt: hgt.value, expressao: expressao.value, fala: fala.value, bracos: bracos.value
       };
 
-      console.log("📦 Dados enviados ao Apps Script:");
-      console.table(data);
+      console.log("📦 Dados enviados:", data);
 
       try {
-        await fetch("https://corsproxy.io/?" + encodeURIComponent("https://script.google.com/macros/s/AKfycbxmVnclY7uH0XnwM1872sCvQ_q9hRy1rlaaSD-FIc2gejaCww7nyC9sqFXN_vz2JjuQGw/exec"), {
+        await fetch(SCRIPT_URL, {
           method: "POST",
+          mode: "no-cors", // ✅ evita bloqueio CORS
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
-
-        const text = await response.text();
-        console.log("📬 Resposta do servidor:", text);
 
         msg.innerHTML = "✅ Dados enviados com sucesso!";
         msg.style.color = "green";
@@ -235,7 +221,3 @@
   </script>
 </body>
 </html>
-
-
-
-
