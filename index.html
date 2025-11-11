@@ -46,6 +46,15 @@
     .btn-primary:hover {
       background: #0360b2;
     }
+    .btn-outline-primary {
+      border-color: #004b8d;
+      color: #004b8d;
+      font-weight: 500;
+    }
+    .btn-outline-primary:hover {
+      background: #004b8d;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -137,9 +146,12 @@
       </div>
 
       <div class="text-center mt-4">
-        <button type="submit" class="btn btn-primary btn-lg">
+        <button type="submit" class="btn btn-primary btn-lg me-3">
           <span class="material-icons">send</span> Enviar Dados
         </button>
+        <a href="dashboard.html" class="btn btn-outline-primary btn-lg">
+          <span class="material-icons">bar_chart</span> Ver Dashboard
+        </a>
       </div>
     </form>
 
@@ -174,4 +186,3 @@
   </script>
 </body>
 </html>
-
