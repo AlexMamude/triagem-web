@@ -69,13 +69,12 @@
       font-weight: bold;
       border-width: 2px;
       transition: all 0.3s ease;
+      background: white;
     }
     #botoesClassificacao .btn.active {
-      color: white !important;
-      background-color: currentColor !important;
-      border-color: currentColor !important;
-      opacity: 0.85;
-      transform: scale(1.05);
+      background-color: #f1f1f1 !important;
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+      transform: scale(1.02);
     }
   </style>
 </head>
@@ -197,7 +196,7 @@
       const classificacao = document.getElementById('classificacaoSelecionada').value;
 
       if (!classificacao) {
-        msg.innerHTML = "⚠️ Selecione uma Classificação de Risco antes de enviar.";
+        msg.innerHTML = "⚠️ Selecione uma classificação de risco antes de enviar.";
         msg.style.color = "red";
         return;
       }
