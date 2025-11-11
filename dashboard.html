@@ -11,38 +11,63 @@
       background: #f4f8fb;
       font-family: "Poppins", sans-serif;
     }
-    .card {
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
+
     h2 {
       color: #004b8d;
       margin-bottom: 20px;
       font-weight: 600;
     }
+
     .btn-outline-primary {
       border-color: #004b8d;
       color: #004b8d;
       font-weight: 500;
     }
+
     .btn-outline-primary:hover {
       background: #004b8d;
       color: white;
     }
+
+    .card {
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
     .table thead {
       background: #004b8d;
       color: white;
     }
+
     .no-data {
       text-align: center;
       color: #888;
       padding: 20px;
     }
+
     .filter-select {
       max-width: 250px;
     }
+
+    /* === NOVO: padroniza os tamanhos dos quadrantes dos gráficos === */
+    .chart-container {
+      height: 380px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chart-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
   </style>
 </head>
+
 <body class="p-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>📊 Painel de Classificação de Risco</h2>
@@ -61,6 +86,7 @@
     </div>
   </div>
 
+  <!-- Indicadores -->
   <div class="row mb-4">
     <div class="col-md-4">
       <div class="card p-3 text-center">
@@ -82,19 +108,21 @@
     </div>
   </div>
 
+  <!-- Gráficos -->
   <div class="row g-4 mb-4">
     <div class="col-md-6">
-      <div class="card p-3">
+      <div class="chart-container">
         <canvas id="graficoDor"></canvas>
       </div>
     </div>
     <div class="col-md-6">
-      <div class="card p-3">
+      <div class="chart-container">
         <canvas id="graficoClassificacao"></canvas>
       </div>
     </div>
   </div>
 
+  <!-- Tabela -->
   <table class="table table-striped table-hover">
     <thead>
       <tr>
@@ -121,7 +149,7 @@
     async function carregarDados() {
       const res = await fetch(sheetURL);
       const texto = await res.text();
-      const linhas = texto.split("\\n").map(l => l.split(","));
+      const linhas = texto.split("\n").map(l => l.split(","));
       todosDados = linhas.slice(1).filter(r => r[0].trim() !== "");
       atualizarDashboard("Todos");
     }
@@ -141,7 +169,7 @@
       document.getElementById("mediaIdade").textContent = Math.round(mediaIdade) || 0;
       document.getElementById("mediaDor").textContent = Math.round(mediaDor) || 0;
 
-      // Gráfico de Dor
+      // === Gráfico de Dor ===
       const ctxDor = document.getElementById("graficoDor");
       const distDor = dores.reduce((acc,v)=>{acc[v]=(acc[v]||0)+1;return acc;}, {});
       if (graficoDor) graficoDor.destroy();
@@ -161,7 +189,7 @@
         }
       });
 
-      // Gráfico de Classificação (pizza)
+      // === Gráfico de Classificação ===
       const ctxClass = document.getElementById("graficoClassificacao");
       const cores = ['#00b0f0','#00b050','#ffc000','#ed7d31','#c00000'];
       const labelsClass = ['Azul','Verde','Amarelo','Laranja','Vermelho'];
@@ -187,7 +215,7 @@
         }
       });
 
-      // Tabela
+      // === Tabela ===
       const tbody = document.getElementById("tabelaDados");
       tbody.innerHTML = "";
       if (dados.length === 0) {
