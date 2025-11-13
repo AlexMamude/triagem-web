@@ -15,7 +15,25 @@
     #ultimaAtualizacao { color:#666;font-size:14px;margin-bottom:25px; }
     .table thead { background:#004b8d;color:white; }
     .table td, .table th { text-align:center;vertical-align:middle;font-size:14px; }
-    .chart-box { flex:1;min-width:350px;background:white;border-radius:15px;box-shadow:0 4px 10px rgba(0,0,0,0.05);padding:25px;display:flex;align-items:center;justify-content:center;height:420px; }
+
+    /* caixas dos gráficos */
+    .chart-box {
+      position: relative;
+      flex: 1 1 480px;                 /* base de largura e bom comportamento no wrap */
+      min-width: 350px;
+      background:white;border-radius:15px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.05);
+      padding:25px;
+      height:420px;                    /* altura fixa controlando o canvas */
+      overflow:hidden;                 /* evita vazar quando o donut fica grande */
+      display:flex;align-items:center;justify-content:center;
+    }
+    /* canvas ocupa 100% da caixa */
+    .chart-box canvas{
+      width:100% !important;
+      height:100% !important;
+    }
+
     .indicator-card { background:white;border-radius:15px;box-shadow:0 4px 10px rgba(0,0,0,0.05);text-align:center;padding:20px; }
     .indicator-card h2 { color:#004b8d;font-weight:bold;margin:0; }
   </style>
@@ -88,8 +106,10 @@
       const idades = dados.map(r => parseInt(r[2])).filter(n => !isNaN(n));
       const dores = dados.map(r => parseInt(r[11])).filter(n => !isNaN(n));
 
-      document.getElementById("mediaIdade").textContent = Math.round(idades.reduce((a, b) => a + b, 0) / (idades.length || 1));
-      document.getElementById("mediaDor").textContent = Math.round(dores.reduce((a, b) => a + b, 0) / (dores.length || 1));
+      document.getElementById("mediaIdade").textContent =
+        Math.round(idades.reduce((a, b) => a + b, 0) / (idades.length || 1));
+      document.getElementById("mediaDor").textContent =
+        Math.round(dores.reduce((a, b) => a + b, 0) / (dores.length || 1));
 
       // === 📊 Gráfico Escala de Dor ===
       const ctx1 = document.getElementById("graficoDor");
@@ -105,6 +125,8 @@
           }]
         },
         options: {
+          responsive: true,
+          maintainAspectRatio: false,  // respeita a altura da .chart-box
           plugins: {
             legend: { display: false },
             title: {
@@ -133,6 +155,8 @@
           datasets: [{ data: Object.values(contagem), backgroundColor: cores }]
         },
         options: {
+          responsive: true,
+          maintainAspectRatio: false,   // respeita a altura da .chart-box
           plugins: {
             legend: {
               position: 'bottom',
