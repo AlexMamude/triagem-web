@@ -70,8 +70,14 @@
       <!-- DADOS DO PACIENTE -->
       <div class="section-title"><span class="material-icons">person_search</span> Dados do Paciente</div>
       <div class="row">
-        <div class="col-md-6 mb-3"><label>Nome</label><input type="text" id="nome" class="form-control" required></div>
-        <div class="col-md-3 mb-3"><label>Idade</label><input type="number" id="idade" class="form-control"></div>
+        <div class="col-md-6 mb-3">
+          <label>Nome</label>
+          <input type="text" id="nome" class="form-control" required>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label>Idade</label>
+          <input type="number" id="idade" class="form-control">
+        </div>
         <div class="col-md-3 mb-3">
           <label>Sexo</label>
           <select id="sexo" class="form-select">
@@ -177,6 +183,7 @@
   </div>
 
   <script>
+    // 🔗 URL do Web App do Apps Script
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmVnclY7uH0XnwM1872sCvQ_q9hRy1rlaaSD-FIc2gejaCww7nyC9sqFXN_vz2JjuQGw/exec";
 
     // Escala de dor
@@ -210,25 +217,26 @@
       msg.style.color = "black";
 
       const suspeitaAvcSelecionada = document.querySelector('input[name="suspeitaAvc"]:checked');
+      const inicioSintomasInput   = document.getElementById('inicioSintomas');
 
       const data = {
-        nome: nome.value,
-        idade: idade.value,
-        sexo: sexo.value,
-        pas: pas.value,
-        pad: pad.value,
-        fc: fc.value,
-        fr: fr.value,
-        temp: temp.value,
-        spo2: spo2.value,
-        queixa: queixa.value,
-        dor: dor.value,
+        nome: document.getElementById('nome').value,
+        idade: document.getElementById('idade').value,
+        sexo: document.getElementById('sexo').value,
+        pas: document.getElementById('pas').value,
+        pad: document.getElementById('pad').value,
+        fc: document.getElementById('fc').value,
+        fr: document.getElementById('fr').value,
+        temp: document.getElementById('temp').value,
+        spo2: document.getElementById('spo2').value,
+        queixa: document.getElementById('queixa').value,
+        dor: document.getElementById('dor').value,
         classificacao: classificacaoSelecionada,
-        hgt: hgt.value,
-        expressao: expressao.value,
-        fala: fala.value,
-        bracos: bracos.value,
-        inicioSintomas: inicioSintomas.value,
+        hgt: document.getElementById('hgt').value,
+        expressao: document.getElementById('expressao').value,
+        fala: document.getElementById('fala').value,
+        bracos: document.getElementById('bracos').value,
+        inicioSintomas: inicioSintomasInput.value,
         suspeitaAvcHiperagudo: suspeitaAvcSelecionada ? suspeitaAvcSelecionada.value : ""
       };
 
@@ -237,13 +245,15 @@
       try {
         await fetch(SCRIPT_URL, {
           method: "POST",
-          mode: "no-cors", // ✅ evita bloqueio CORS
+          mode: "no-cors", // evita bloqueio CORS
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
 
         msg.innerHTML = "✅ Dados enviados com sucesso!";
         msg.style.color = "green";
+
+        // limpa o form
         this.reset();
         botoes.forEach(b => b.classList.remove('active'));
         classificacaoSelecionada = "";
